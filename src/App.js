@@ -11,8 +11,8 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom'
 
 // container
 import LoginContainer from 'container/LoginContainer'
-import { modalToggle } from 'util/redux/modal'
 import MainContainer from 'container/MainContainer'
+import MessageModal from 'component/modal/MessageModal'
 
 function App() {
   const dispatch = useDispatch()
@@ -20,17 +20,13 @@ function App() {
   const modal = useSelector(state => state.modal)
   
   useEffect(() => {
-    
-  }, [])
 
-  function modalTog() {
-    dispatch(modalToggle())
-  }
+  }, [])
 
   return (
     <>
     {modal.isOpen ? 
-    <></>
+    <MessageModal message={modal.message} isButton={modal.isButton} func={modal.func} />
     : <></>}
     <BrowserRouter>
       <Routes>

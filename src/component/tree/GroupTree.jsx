@@ -1,8 +1,11 @@
 import Tree from "rc-tree";
 import React from "react"
-import classNames from 'classnames';
 import './index.less'
 import './icon.less';
+import 'tree.css';
+
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faUsersRectangle } from '@fortawesome/free-solid-svg-icons'
 
 function getNewTreeData(treeData, curKey, child) {
   const loop = (treeData) => {
@@ -20,7 +23,10 @@ function getNewTreeData(treeData, curKey, child) {
 }
 
 const Icon = ({ selected }) => (
-  <span className={classNames('customize-icon', selected && 'selected-icon')} />
+  <>
+  
+  <FontAwesomeIcon icon={faUsersRectangle} color="gray" />
+  </>
 );
 
 class GroupTree extends React.Component {
@@ -70,6 +76,7 @@ class GroupTree extends React.Component {
       <>
         <Tree
           icon={Icon}
+          showLine={true}
           onSelect={this.onSelect}
           loadData={this.onLoadData}
           treeData={treeData}

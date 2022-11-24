@@ -1,14 +1,17 @@
+import * as util from 'util/util'
+
 import { useTranslation } from "react-i18next"
+
+// wrapper
+import UserSelectModal from "component/modal/UserSelectModal"
+
+// action
+import * as AccountAction from 'action/AccountAction'
 
 // font awesome
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlus, faMinus } from '@fortawesome/free-solid-svg-icons'
 import { useEffect, useState } from "react"
-
-import * as AccountAction from 'action/AccountAction'
-import * as GroupAction from 'action/GroupAction'
-
-import UserSelectModal from "component/modal/UserSelectModal"
 
 export default function AddUserModal({ selectGroup, modalClose }) {
     const { t } = useTranslation()
@@ -54,26 +57,7 @@ export default function AddUserModal({ selectGroup, modalClose }) {
         await getAccountListByGroupId()
         await closeUserSelectModal()
     }
-
-    // checkbox
-    function handleSingleCheck(checked, accountIdx) {
-        if(checked) {
-            setCheckedItem(prev => [...prev, accountIdx])
-        } else {
-            setCheckedItem(checkedItem.filter((el) => el !== accountIdx))
-        }
-    }
-
-    function handleAllCheck(checked) {
-        if(checked) {
-            const idxArray = []
-            accountList.forEach((el) => idxArray.push(el.accountIdx))
-            setCheckedItem(idxArray)
-        } else {
-            setCheckedItem([])
-        }
-    }
-
+    
     return (
         <>
         {userSelectModal ?
@@ -83,7 +67,7 @@ export default function AddUserModal({ selectGroup, modalClose }) {
             <div className='modal-contents'>
                 <div className='modal-headers'>
                     <span className='modal-titles'>
-                        <span>사용자 추가</span>
+                        <span>{t('COLUMN.NAME.ADD_ACCOUNT')}</span>
                     </span>
                     <button type='button' className='close' onClick={modalClose}>
                         <span aria-hidden='true'>x</span>
@@ -93,12 +77,12 @@ export default function AddUserModal({ selectGroup, modalClose }) {
                     <div className='modalBox'>
                         <div className='modalList'>
                             <dl>
-                                <dt><b>그룹명</b></dt>
+                                <dt><b>{t('COLUMN.NAME.GROUP_NAME')}</b></dt>
                                 <dd><span>{selectGroup.groupName}</span></dd>
                             </dl>
                             <dl className='modalWidthBox'>
                                 <dt>
-                                    <b>사용자</b>
+                                    <b>{t('COLUMN.NAME.USER')}</b>
                                     <span> : <span id='userCount'>{accountCount}</span>명</span>
                                     <button id='selectUserBtn' type='button' className='act' onClick={openUserSelectModal}>
                                         <FontAwesomeIcon icon={faPlus} />
@@ -113,25 +97,25 @@ export default function AddUserModal({ selectGroup, modalClose }) {
                                             <thead>
                                                 <tr>
                                                     <th width='4%' scope='col'>
-                                                        <input type='checkbox' onChange={(e) => handleAllCheck(e.target.checked)} checked={checkedItem.length === accountList.length && checkedItem.length > 0 ? true : false}/>
+                                                        <input type='checkbox' onChange={(e) => util.handleAllCheck(e.target.checked, 'accountIdx', accountList, setCheckedItem)} checked={checkedItem.length === accountList.length && checkedItem.length > 0 ? true : false}/>
                                                     </th>
-                                                    <th width='18%' scope='col' className='textLeftIm'>이름</th>
-                                                    <th width='17%' scope='col' className='textLeftIm'>아이디</th>
-                                                    <th width='17%' scope='col' className='textLeftIm'>직급</th>
-                                                    <th width='18%' scope='col' className='textLeftIm'>상태</th>
-                                                    <th width='18%' scope='col' className='textLeftIm'>수정일</th>
+                                                    <th width='18%' scope='col' className='textLeftIm'>{t('COLUMN.NAME.NAME')}</th>
+                                                    <th width='17%' scope='col' className='textLeftIm'>{t('COLUMN.NAME.ID')}</th>
+                                                    <th width='17%' scope='col' className='textLeftIm'>{t('COLUMN.NAME.GRADE')}</th>
+                                                    <th width='18%' scope='col' className='textLeftIm'>{t('COLUMN.NAME.STATUS')}</th>
+                                                    <th width='18%' scope='col' className='textLeftIm'>{t('COLUMN.NAME.UPDATE_DATE')}</th>
                                                 </tr>
                                             </thead>
                                             <tbody className='maxHi260'>
                                                 { accountList && accountList.map((account, index) => 
                                                     <tr key={index}>
                                                         <td width='4%'>
-                                                            <input type='checkbox' name={`select-${account.accountIdx}`} onChange={(e) => handleSingleCheck(e.target.checked, account.accountIdx)} checked={checkedItem.includes(account.accountIdx) ? true : false} />
+                                                            <input type='checkbox' name={`select-${account.accountIdx}`} onChange={(e) => util.handleSingleCheck(e.target.checked, account.accountIdx, checkedItem, setCheckedItem)} checked={checkedItem.includes(account.accountIdx) ? true : false} />
                                                         </td>
                                                         <td width='18%' scope='col' className='textLeftIm'>{account.name}</td>
                                                         <td width='17%' scope='col' className='textLeftIm'>{account.accountId}</td>
                                                         <td width='17%' scope='col' className='textLeftIm'>{account.grade}</td>
-                                                        <td width='18%' scope='col' className='textLeftIm'>{account.status}</td>
+                                                        <td width='18%' scope='col' className='textLeftIm'>{account.status === 1 ? t('COLUMN.NAME.USE') : t('COLUMN.NAME.BAN')}</td>
                                                         <td width='18%' scope='col' className='textLeftIm'>{account.updateDatetime}</td>
                                                     </tr>
                                                 )}

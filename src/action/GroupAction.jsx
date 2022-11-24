@@ -14,11 +14,12 @@ export async function getTopGroupList() {
 }
 
 // 계정 목록 가져오기
-export async function getSelectGroupList(groupId) {
+export async function getSelectGroupList(groupId, exceptGroupId) {
     const url = `${server}${GROUP.GET_SELECT_GROUP_LIST}`
     const method = 'GET'
     const params = {
-        groupId: groupId
+        groupId: groupId,
+        exceptGroupId: exceptGroupId
     }
     const response = await http.request(url, method, '', params)
 
@@ -49,7 +50,7 @@ export async function modifyGroup(params) {
         parentGroupId: params.parentGroupId
     }
     await http.request(url, method, data)
-    await window.location.replace('group')
+    //await window.location.replace('group')
 }
 
 export async function getGroup(groupId) {

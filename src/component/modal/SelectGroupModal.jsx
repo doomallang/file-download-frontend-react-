@@ -1,16 +1,21 @@
 import GroupTree from "component/tree/GroupTree"
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { useTranslation } from "react-i18next"
 import * as GroupAction from 'action/GroupAction'
 
-export default function SelectGroupModal({ groupLists, close, applySelectGroup } ) {
+export default function SelectGroupModal({ isModify, selGroup, groupLists, close, applySelectGroup } ) {
     const { t } = useTranslation()
 
     const [groupList, setGroupList] = useState(groupLists)
     const [selectGroup, setSelectGroup] = useState({groupKey: '', groupName: ''})
 
     async function getSelectGroupList(key, groupIdx) {
-        const list = await GroupAction.getSelectGroupList(key)
+        let exceptGroupId = ''
+        if(isModify) {
+            let selKey = selGroup.groupKey[0].split('-')
+            exceptGroupId = selKey[selKey.length - 1]
+        }
+        const list = await GroupAction.getSelectGroupList(key, exceptGroupId)
         const treeList = await GroupAction.makeTreeList(list, groupIdx)
         return await treeList
     }

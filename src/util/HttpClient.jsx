@@ -1,8 +1,9 @@
 import axios from 'axios'
+import i18next from 'i18next'
 
 // redux
 import { store } from 'util/redux/store'
-import { modalToggle } from './redux/modal'
+import { modalOpen } from './redux/modal'
 
 const defaultHeaderConfig = {
 	Accept: 'application/json; charset=utf-8',
@@ -52,11 +53,12 @@ export async function AuthenticationErrorHandler(response) {
     let message;
 	// 서버가 dead 상태, 403, 세션인증에러 일때
 	if(response.status === 403) {
-		message = 'SERVER.MESSAGE.SIGN_IN_INFOMATION_HAS_EXPIRED_OR_NOT_ACCESS'
-		await store.dispatch(modalToggle(message))
+		message = i18next.t('SERVER.MESSAGE.SIGN_IN_INFOMATION_HAS_EXPIRED_OR_NOT_ACCESS')
+		await store.dispatch(modalOpen(message))
         //await window.location.replace('/')
 	} else if(response.status === 422) {
-        store.dispatch(modalToggle(response.data.message))
+        message = i18next.t(response.data.message)
+        store.dispatch(modalOpen(message))
         return 1
     }
 }

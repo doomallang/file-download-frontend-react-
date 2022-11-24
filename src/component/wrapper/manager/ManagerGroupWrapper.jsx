@@ -1,3 +1,6 @@
+import * as util from 'util/util'
+import { useDispatch } from 'react-redux'
+
 // WRAPPER
 import SearchTitle from 'component/wrapper/search/SearchTitle'
 import SearchButtonWrapper from 'component/wrapper/search/SearchButtonWrapper'
@@ -17,14 +20,15 @@ import { useEffect, useState } from 'react'
 import * as GroupAction from 'action/GroupAction'
 import { useTranslation } from 'react-i18next'
 
+import { modalOpen, modalClose } from 'util/redux/modal'
+
 export default function ManagerGroupWrapper() {
     const { t } = useTranslation()
+    const dispatch = useDispatch()
+
     const [modal, setModal] = useState(false)
-    const [messageModal, setMessageModal] = useState(false)
     const [selectGroupModal, setSelectGroupModal] = useState(false)
     const [addUserModal, setAddUserModal] = useState(false)
-    const [applyButton, setApplyButton] = useState(false)
-    const [message, setMessage] = useState('')
     const [groupList, setGroupList] = useState([])
     const [loading, setLoading] = useState(true)
     const [selectGroup, setSelectGroup] = useState({groupKey: '', groupName: ''})
@@ -41,19 +45,11 @@ export default function ManagerGroupWrapper() {
         getTopGroupList()
     }, [])
 
-    function handleChange(e) {
-        const {id, value} = e.target
-        setGroup({
-            ...group,
-            [id]: value
-        })
-    }
-
-    // 그룹 추가 BUTTON
+    // CLICK group add button
     function clickAddItemBtn() {     
         setIsModify(false)
         if(selectGroup.groupKey.length < 1) {
-            messageModalOpen(t('SERVER.MESSAGE.PLEASE_SELECT_GROUP'))
+            dispatch(modalOpen(t('SERVER.MESSAGE.PLEASE_SELECT_GROUP')))
         } else {
             let key = selectGroup.groupKey[0].split('-')
             setGroup({
@@ -64,18 +60,18 @@ export default function ManagerGroupWrapper() {
         }
     }
 
-    // 그룹 수정 BUTTON
+    // CLICK group modify button
     async function clickModifyItemBtn() {    
         setIsModify(true)
         await getGroupInfo()
         if(selectGroup.groupKey.length < 1) {
-            messageModalOpen(t('SERVER.MESSAGE.PLEASE_SELECT_GROUP'))
+            dispatch(modalOpen(t('SERVER.MESSAGE.PLEASE_SELECT_GROUP')))
         } else {
             await setModal(!modal)
         }
     }
 
-    // 그룹 가져오기
+    // ACTION get select group info
     async function getGroupInfo() {
         if(selectGroup.groupKey !== '') {
             let key = selectGroup.groupKey[0].split('-')
@@ -98,34 +94,24 @@ export default function ManagerGroupWrapper() {
         }
     }
 
-    function messageModalOpen(message) {
-        setMessage(message)
-        setMessageModal(true)
-    }
-
-    function messageModalClose() {
-        setMessage('')
-        setApplyButton(false)
-        setMessageModal(false)
-    }
-
+    // ACTION group add/modify
     async function addModifyGroup() {
         if(isModify) {
             const params = modifyDataCompare()
             if(Object.keys(params).length === 0) {
-                messageModalOpen(t('SERVER.MESSAGE.NO_EDITS_FOUND'))
+                dispatch(modalOpen(t('SERVER.MESSAGE.NO_EDITS_FOUND')))
             } else {
                 params.groupId = group.groupId
                 await GroupAction.modifyGroup(params)
             }
         } else {
-            if(group.groupName === '') {messageModalOpen(t('SERVER.MESSAGE.PLEASE_ENTER_GROUP_NAME')); return;}
-            if(group.phoneNumber === '') {messageModalOpen(t('SERVER.MESSAGE.PLEASE_ENTER_PHONE_NUMBER')); return;}
+            if(group.groupName === '') {dispatch(modalOpen(t('SERVER.MESSAGE.PLEASE_ENTER_GROUP_NAME'))); return;}
+            if(group.phoneNumber === '') {dispatch(modalOpen(t('SERVER.MESSAGE.PLEASE_ENTER_PHONE_NUMBER'))); return;}
             await GroupAction.addGroup(group)
         }
     }
 
-    // 수정된 항목 확인
+    // CHECK modify contents
     function modifyDataCompare() {
         const params = {}
         if(groupInfo.groupName !== group.groupName) {params.groupName = group.groupName}
@@ -135,33 +121,47 @@ export default function ManagerGroupWrapper() {
         return params
     }
 
-    // 부모 그룹 변경
-    function selectParentGroup() {
-        setSelectGroupModal(!selectGroupModal)
+    // OPEN modal upper group
+    function openSelectGroupModal() {
+        setSelectGroupModal(true)
     }
 
+    // OPEN modal upper group
+    function closeSelectGroupModal() {
+        setSelectGroupModal(false)
+    }
+
+    // ACTION get select group's under group
     async function getSelectGroupList(key, groupIdx) {
         const list = await GroupAction.getSelectGroupList(key)
         const treeList = await GroupAction.makeTreeList(list, groupIdx)
         return await treeList
     }
-    
-    function closeSelectGroupModal() {
-        setSelectGroupModal(false)
-    }
 
+    // OPEN modal add user
     function openAddUserModal() {
         if(selectGroup.groupKey.length < 1) {
-            messageModalOpen(t('SERVER.MESSAGE.PLEASE_SELECT_GROUP'))
+            dispatch(modalOpen(t('SERVER.MESSAGE.PLEASE_SELECT_GROUP')))
         } else {
             setAddUserModal(true)
         }
     }
 
+    // CLOSE modal add user
     function closeAddUserModal() {
         setAddUserModal(false)
     }
-    
+
+    // STATE state group change
+    function handleChange(e) {
+        const {id, value} = e.target
+        setGroup({
+            ...group,
+            [id]: value
+        })
+    }
+
+    // STATE set upper group(add/modify modal)
     function applySelectGroup(parentGroup) {
         let key = parentGroup.groupKey[0].split('-')
         const groupId = key[key.length - 1]
@@ -172,25 +172,26 @@ export default function ManagerGroupWrapper() {
         })
     }
 
+    // CLICK delete button 
     function clickDeleteButton() {
         if(selectGroup.groupKey.length < 1) {
-            messageModalOpen(t('SERVER.MESSAGE.PLEASE_SELECT_GROUP'))
+            dispatch(modalOpen(t('SERVER.MESSAGE.PLEASE_SELECT_GROUP')))
         } else {
-            setApplyButton(true)
-            messageModalOpen(t('SERVER.MESSAGE.ARE_YOU_WANT_TO_DELETE'))
+            dispatch(modalOpen(t('SERVER.MESSAGE.ARE_YOU_WANT_TO_DELETE'), true, deleteGroup))
         }
     }
 
+    // ACTION delete group
     async function deleteGroup(isDone) {
-        
         if(isDone) {
             let key = selectGroup.groupKey[0].split('-')
             const groupId = key[key.length - 1]
             if(Number(groupId) === 1) {
-                setApplyButton(false)
-                messageModalOpen(t('SERVER.MESSAGE.CANNOT_DELETE_TOP_LEVEL_GROUP'))
+                dispatch(modalOpen(t('SERVER.MESSAGE.CANNOT_DELETE_TOP_LEVEL_GROUP')))
             } else {
+                dispatch(modalClose())
                 await GroupAction.removeGroup(groupId)
+
             }
         }
     }
@@ -203,14 +204,11 @@ export default function ManagerGroupWrapper() {
     return (
         <>
             <div id='mainLayout' className='fl_content layoutMainSearchWrap'>
-                {messageModal ? 
-                    <MessageModal message={message} close={messageModalClose} useApplyButton={applyButton} propFunction={deleteGroup} />
-                : <></>}
                 {selectGroupModal ?
-                    <SelectGroupModal groupLists={groupList} applySelectGroup={applySelectGroup} close={closeSelectGroupModal} />
+                    <SelectGroupModal isModify={isModify} selGroup={selectGroup} groupLists={groupList} applySelectGroup={applySelectGroup} close={closeSelectGroupModal} />
                 : <></>}
                 {modal ? 
-                    <AddModifyGroupModal modalClose={clickAddItemBtn} addModifyGroup={addModifyGroup} handleChange={handleChange} group={group} selectParentGroup={selectParentGroup} />
+                    <AddModifyGroupModal modalClose={clickAddItemBtn} addModifyGroup={addModifyGroup} group={group} handleChange={handleChange} openSelectGroupModal={openSelectGroupModal} />
                 : <></>}
                 {addUserModal ? 
                     <AddUserModal selectGroup={selectGroup} modalClose={closeAddUserModal} />
@@ -230,7 +228,9 @@ export default function ManagerGroupWrapper() {
                     </SearchButtonWrapper>
                 </div>
                 <div className='fl_contBox'>
-                    <GroupTree list={groupList} getSelectGroupList={getSelectGroupList} setSelectGroup={setSelectGroup} />
+                    <div className='ml20 mt10'>
+                        <GroupTree list={groupList} getSelectGroupList={getSelectGroupList} setSelectGroup={setSelectGroup} />
+                    </div>
                 </div>
             </div>
         </>

@@ -1,6 +1,8 @@
+import * as util from 'util/util'
+
 import { useTranslation } from 'react-i18next'
 
-export default function AddModifyGroupModal({ modalClose, handleChange, addModifyGroup, group, selectParentGroup }) {
+export default function AddModifyGroupModal({ modalClose, addModifyGroup, group, openSelectGroupModal, handleChange }) {
     const { t } = useTranslation()
 
     return (
@@ -8,7 +10,7 @@ export default function AddModifyGroupModal({ modalClose, handleChange, addModif
             <div className='modal-contents'>
                 <div className='modal-headers'>
                     <span className='modal-titles'>
-                        <span>그룹 추가</span>
+                        <span>{t('COLUMN.NAME.ADD_GROUP')}</span>
                     </span>
                     <button type='button' className='close' onClick={modalClose}>
                         <span aria-hidden='true'>x</span>
@@ -40,7 +42,7 @@ export default function AddModifyGroupModal({ modalClose, handleChange, addModif
                                 <dd>
                                     <span>{group.parentGroupName}</span>
                                     &nbsp;
-                                    <button type='button' className='btns btns-default btns-sm' onClick={selectParentGroup}>{t('BUTTON.NAME.SELECT_GROUP')}</button>
+                                    <button type='button' className='btns btns-default btns-sm' onClick={openSelectGroupModal}>{t('BUTTON.NAME.SELECT_GROUP')}</button>
                                 </dd>
                             </dl>
                         </div>
