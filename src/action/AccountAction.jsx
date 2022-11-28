@@ -6,6 +6,7 @@ import { SERVER, ACCOUNT } from 'constant/url'
 // redux
 import { store } from 'util/redux/store'
 import { authInfoSave } from 'util/redux/authInfo'
+import { modalClose } from 'util/redux/modal'
 
 const server = `${SERVER.IP}:${SERVER.PORT}`
 
@@ -21,11 +22,21 @@ export async function login(account) {
     await window.location.replace('main/account')
 }
 
-export async function getAccountList(params) {
+export async function getAccountList(startIndex, pageSize, searchOption, searchOptionText, searchOptionStatus) {
+    let statuses = ''
+    if(searchOptionStatus.length > 0) {
+        statuses = searchOptionStatus.join()
+    }
     const url = `${server}${ACCOUNT.GET_ACCOUNT_LIST}`
     const method = 'GET'
+    const params = {
+        startIndex: startIndex,
+        pageSize: pageSize,
+        searchOption: searchOption,
+        searchOptionText: searchOptionText,
+        statuses: statuses
+    }
     const response = await http.request(url, method, '', params)
-    
     return response.data
 }
 
@@ -41,22 +52,53 @@ export async function getAccountListByGroupId(groupId) {
 }
 
 export async function addAccount(account) {
-    const url = `${server}${ACCOUNT.ADD_ACCOUNT}`
+    const url = `${server}${ACCOUNT.ACCOUNT}`
     const method = 'POST'
     const data = {
-        userId: account.userId,
-        userPassword: account.userPassword,
-        userName: account.userName,
-        groupId: account.groupId
+        accountId: account.accountId,
+        password: account.password,
+        name: account.name,
+        grade: account.grade,
+        groupId: account.groupId,
+        status: account.status
     }
     const response = await http.request(url, method, data)
+    if(response.status === 200) {
+        await window.location.replace('user')
+    }
 }
 
-export async function getSelectAccount(accountId) {
-    const url = `${server}${ACCOUNT.GET_SELECT_ACCOUNT}`
+export async function modifyAccount(params) {
+    const url = `${server}${ACCOUNT.ACCOUNT}`
+    const method = 'PUT'
+
+    const response = await http.request(url, method, params)
+    if(response.status === 200) {
+        await window.location.replace('user')
+    }
+}
+
+export async function removeAccount(accountIdxs) {
+    console.log(accountIdxs)
+    const url = `${server}${ACCOUNT.ACCOUNT}`
+    const method = 'DELETE'
+
+    const params = {
+        accountIdxs: accountIdxs
+    }
+
+    const response = await http.request(url, method, '', params)
+    if(response.status === 200) {
+        store.dispatch(modalClose())
+        await window.location.replace('user')
+    }
+}
+
+export async function getSelectAccount(accountIdx) {
+    const url = `${server}${ACCOUNT.ACCOUNT}`
     const method = 'GET'
     const params = {
-        accountId: accountId
+        accountIdx: accountIdx
     }
     const response = await http.request(url, method, '', params)
     return response.data

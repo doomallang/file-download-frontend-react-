@@ -8,7 +8,6 @@ import SearchLeftButton from 'component/wrapper/search/SearchLeftButton'
 import SearchRightButton from 'component/wrapper/search/SearchRightButton'
 
 // MODAL
-import MessageModal from 'component/modal/MessageModal'
 import AddModifyGroupModal from 'component/modal/AddModifyGroupModal'
 import SelectGroupModal from 'component/modal/SelectGroupModal'
 import AddUserModal from 'component/modal/AddUserModal'
@@ -191,7 +190,6 @@ export default function ManagerGroupWrapper() {
             } else {
                 dispatch(modalClose())
                 await GroupAction.removeGroup(groupId)
-
             }
         }
     }

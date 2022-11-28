@@ -16,3 +16,11 @@ export function handleAllCheck(checked, key, list, setCheckedItem) {
         setCheckedItem([])
     }
 }
+
+export function itemClick(item, selectedItem, setSelectedItem) {
+    if(item === selectedItem) {
+        setSelectedItem('')
+    } else {
+        setSelectedItem(item)
+    }
+}

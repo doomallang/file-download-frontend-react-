@@ -55,10 +55,10 @@ export async function AuthenticationErrorHandler(response) {
 	if(response.status === 403) {
 		message = i18next.t('SERVER.MESSAGE.SIGN_IN_INFOMATION_HAS_EXPIRED_OR_NOT_ACCESS')
 		await store.dispatch(modalOpen(message))
-        //await window.location.replace('/')
+        return response.status
 	} else if(response.status === 422) {
         message = i18next.t(response.data.message)
         store.dispatch(modalOpen(message))
-        return 1
+        return response.status
     }
 }

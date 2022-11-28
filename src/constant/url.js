@@ -10,7 +10,7 @@ export const LANGUAGE = {
 export const ACCOUNT = {
     LOGIN: '/api/account/login',
     GET_ACCOUNT_LIST: '/api/account/getAccountList',
-    ADD_ACCOUNT: '/api/account/addAccount',
+    ACCOUNT: '/api/account',
     GET_SELECT_ACCOUNT: '/api/account/getSelectAccount',
     GET_ACCOUNT_LIST_BY_GROUP_ID: '/api/account/getAccountListByGroupId',
     MODIFY_ACCOUNTS: '/api/account/modifyAccounts'

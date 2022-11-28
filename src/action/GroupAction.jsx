@@ -50,7 +50,7 @@ export async function modifyGroup(params) {
         parentGroupId: params.parentGroupId
     }
     await http.request(url, method, data)
-    //await window.location.replace('group')
+    await window.location.replace('group')
 }
 
 export async function getGroup(groupId) {

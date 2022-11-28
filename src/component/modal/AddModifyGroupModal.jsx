@@ -10,7 +10,7 @@ export default function AddModifyGroupModal({ modalClose, addModifyGroup, group,
             <div className='modal-contents'>
                 <div className='modal-headers'>
                     <span className='modal-titles'>
-                        <span>{t('COLUMN.NAME.ADD_GROUP')}</span>
+                        <span>{t('COLUMN.NAME.ADD_MODIFY_GROUP')}</span>
                     </span>
                     <button type='button' className='close' onClick={modalClose}>
                         <span aria-hidden='true'>x</span>
