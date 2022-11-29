@@ -15,7 +15,7 @@ export default function AddModifyUserModal({ modalClose, grades, handleChange, s
                     </button>
                 </div>
                 <div className='modal-body'>
-                   <form>
+                    <form>
                         <div id='ransomCruncherDetectPolicyInfo' className='modalBox'>
                             <dl className='layoutWrap'>
                                 <dt>

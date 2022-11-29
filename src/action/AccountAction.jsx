@@ -27,7 +27,7 @@ export async function getAccountList(startIndex, pageSize, searchOption, searchO
     if(searchOptionStatus.length > 0) {
         statuses = searchOptionStatus.join()
     }
-    const url = `${server}${ACCOUNT.GET_ACCOUNT_LIST}`
+    const url = `${server}${ACCOUNT.M_GET_ACCOUNT_LIST}`
     const method = 'GET'
     const params = {
         startIndex: startIndex,
@@ -41,7 +41,7 @@ export async function getAccountList(startIndex, pageSize, searchOption, searchO
 }
 
 export async function getAccountListByGroupId(groupId) {
-    const url = `${server}${ACCOUNT.GET_ACCOUNT_LIST_BY_GROUP_ID}`
+    const url = `${server}${ACCOUNT.M_GET_ACCOUNT_LIST_BY_GROUP_ID}`
     const method = 'GET'
     const params = {
         groupId: groupId
@@ -52,7 +52,7 @@ export async function getAccountListByGroupId(groupId) {
 }
 
 export async function addAccount(account) {
-    const url = `${server}${ACCOUNT.ACCOUNT}`
+    const url = `${server}${ACCOUNT.M_ACCOUNT}`
     const method = 'POST'
     const data = {
         accountId: account.accountId,
@@ -68,19 +68,19 @@ export async function addAccount(account) {
     }
 }
 
-export async function modifyAccount(params) {
-    const url = `${server}${ACCOUNT.ACCOUNT}`
+export async function modifyAccount(data) {
+    const url = `${server}${ACCOUNT.M_ACCOUNT}`
     const method = 'PUT'
 
-    const response = await http.request(url, method, params)
+    const response = await http.request(url, method, data)
     if(response.status === 200) {
-        await window.location.replace('user')
+        store.dispatch(modalClose())
+        await window.location.replace('account')
     }
 }
 
 export async function removeAccount(accountIdxs) {
-    console.log(accountIdxs)
-    const url = `${server}${ACCOUNT.ACCOUNT}`
+    const url = `${server}${ACCOUNT.M_ACCOUNT}`
     const method = 'DELETE'
 
     const params = {
@@ -95,7 +95,7 @@ export async function removeAccount(accountIdxs) {
 }
 
 export async function getSelectAccount(accountIdx) {
-    const url = `${server}${ACCOUNT.ACCOUNT}`
+    const url = `${server}${ACCOUNT.M_ACCOUNT}`
     const method = 'GET'
     const params = {
         accountIdx: accountIdx
@@ -105,12 +105,20 @@ export async function getSelectAccount(accountIdx) {
 }
 
 export async function modifyAccounts(groupId, accountIdxs) {
-    const url = `${server}${ACCOUNT.MODIFY_ACCOUNTS}`
+    const url = `${server}${ACCOUNT.M_MODIFY_ACCOUNTS}`
     const method = 'PUT'
     const params = {
         groupId: groupId,
         accountIdxs: accountIdxs
     }
     const response = await http.request(url, method, '', params)
+    return response.data
+}
+
+export async function getAccountInfo() {
+    const url = `${server}${ACCOUNT.ACCOUNT}`
+    const method = 'GET'
+
+    const response = await http.request(url, method, '', '')
     return response.data
 }

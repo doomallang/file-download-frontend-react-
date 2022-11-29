@@ -8,16 +8,16 @@ export const LANGUAGE = {
 }
 
 export const ACCOUNT = {
-    LOGIN: '/api/account/login',
-    GET_ACCOUNT_LIST: '/api/account/getAccountList',
+    LOGIN: '/apim/account/login',
     ACCOUNT: '/api/account',
-    GET_SELECT_ACCOUNT: '/api/account/getSelectAccount',
-    GET_ACCOUNT_LIST_BY_GROUP_ID: '/api/account/getAccountListByGroupId',
-    MODIFY_ACCOUNTS: '/api/account/modifyAccounts'
+    M_GET_ACCOUNT_LIST: '/apim/account/getAccountList',
+    M_ACCOUNT: '/apim/account',
+    M_GET_ACCOUNT_LIST_BY_GROUP_ID: '/apim/account/getAccountListByGroupId',
+    M_MODIFY_ACCOUNTS: '/apim/account/modifyAccounts'
 }
 
 export const GROUP = {
-    GET_TOP_GROUP_LIST: '/api/group/getTopGroupList',
-    GET_SELECT_GROUP_LIST: '/api/group/getSelectGroupList',
-    GROUP: '/api/group'
+    GET_TOP_GROUP_LIST: '/apim/group/getTopGroupList',
+    GET_SELECT_GROUP_LIST: '/apim/group/getSelectGroupList',
+    GROUP: '/apim/group'
 }

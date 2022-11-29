@@ -4,9 +4,9 @@ import { Link } from 'react-router-dom';
 
 // font awesome
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faUser, faPeopleGroup, faFile, faClock } from '@fortawesome/free-solid-svg-icons'
+import { faUser, faFile } from '@fortawesome/free-solid-svg-icons'
 
-export default function ManagerLeftWrapper() {
+export default function UserLeftWrapper() {
 
     return (
         <div id='__layoutLeftSlideMenu' className='fl_leftWrap adminLeftWrap'>
@@ -15,27 +15,15 @@ export default function ManagerLeftWrapper() {
                     <div className='leftUserNav'>
                         <ul>
                             <li>
-                                <Link to='/main/manager/account' className='leftMenuItem'>
+                                <Link to='/main/user/account' className='leftMenuItem'>
                                     <FontAwesomeIcon icon={faUser} />
                                     &nbsp;사용자 관리
                                 </Link>
                             </li>
                             <li>
-                                <Link to='/main/manager/group' className='leftMenuItem'>
-                                    <FontAwesomeIcon icon={faPeopleGroup} />
-                                    &nbsp;그룹 관리
-                                </Link>
-                            </li>
-                            <li>
-                                <Link to='/main/manager/file' className='leftMenuItem'>
+                                <Link to='/main/user/file' className='leftMenuItem'>
                                     <FontAwesomeIcon icon={faFile} />
                                     &nbsp;파일 관리
-                                </Link>
-                            </li>
-                            <li>
-                                <Link to='/main/manager/log' className='leftMenuItem'>
-                                    <FontAwesomeIcon icon={faClock} />
-                                    &nbsp;로그 관리
                                 </Link>
                             </li>
                         </ul>

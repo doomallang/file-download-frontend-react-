@@ -21,7 +21,6 @@ export default function MessageModal({ message, isButton, func }) {
     
     return (
         <>
-        {console.log(isButton)}
         <div>
             <div className='modalMessageForm c-message-modal-dialog'>
                 <div className='modal-contents'>

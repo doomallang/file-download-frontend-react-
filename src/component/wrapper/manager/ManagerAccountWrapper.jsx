@@ -1,4 +1,5 @@
-import { useDispatch } from 'react-redux'
+import * as util from 'util/util'
+import { useEffect, useState } from 'react'
 
 // WRAPPER
 import SearchWrapper from 'component/wrapper/search/SearchWrapper'
@@ -6,29 +7,37 @@ import SearchTitle from 'component/wrapper/search/SearchTitle'
 import SearchButtonWrapper from 'component/wrapper/search/SearchButtonWrapper'
 import SearchLeftButton from 'component/wrapper/search/SearchLeftButton'
 import SearchRightButton from 'component/wrapper/search/SearchRightButton'
-import AddModifyUserModal from 'component/modal/AddModifyUserModal'
 import Head from 'component/wrapper/content/Head'
 import Body from 'component/wrapper/content/Body'
 import Page from 'component/wrapper/content/Page'
 
-import { useEffect, useState } from 'react'
-import * as AccountAction from 'action/AccountAction'
-import * as GroupAction from 'action/GroupAction'
-import * as util from 'util/util'
-
-import { useTranslation } from 'react-i18next'
-
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faSearch } from '@fortawesome/free-solid-svg-icons'
+// MODAL
+import AddModifyUserModal from 'component/modal/AddModifyUserModal'
 import SelectGroupModal from 'component/modal/SelectGroupModal'
 
-// redux
+// ACTION
+import * as AccountAction from 'action/AccountAction'
+import * as GroupAction from 'action/GroupAction'
+
+// i18n
+import { useTranslation } from 'react-i18next'
+
+// FONT AWESOME
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faSearch } from '@fortawesome/free-solid-svg-icons'
+
+// REDUX
+import { useDispatch } from 'react-redux'
 import { modalOpen } from 'util/redux/modal'
 
-export default function ManagerUserWrapper() {
+// CONSTANT
+import { grades } from 'constant/gradeType'
+
+export default function ManagerAccountWrapper() {
     const { t } = useTranslation()
     const dispatch = useDispatch()
 
+    // STATE
     const [loading, setLoading] = useState(true)
     const [accountList, setAccountList] = useState()
     const [startIndex, setStartIndex] = useState(0)
@@ -46,17 +55,28 @@ export default function ManagerUserWrapper() {
 
     const headList = [t('COLUMN.NAME.GROUP'), t('COLUMN.NAME.ID'), t('COLUMN.NAME.NAME'), t('COLUMN.NAME.GRADE'), t('COLUMN.NAME.CREATE_DATE'), t('COLUMN.NAME.UPDATE_DATE')]
     const width = ['16%', '16%', '12%', '12%', '20%', '20%', '4%']
-    const grades = ['사원', '주임', '대리', '과장', '차장', '부장']
     const [account, setAccount] = useState({
-        grade: '사원',
+        grade: grades[0],
         status: 0
     })
     const [accountInfo, setAccountInfo] = useState()
+
+    useEffect(() => {
+        getTopGroupList()
+        getAccountList()
+    }, [])
+
+    useEffect(() => {
+        getTopGroupList()
+        getAccountList()
+    }, [pageSize])
     
+    // CLICK add user button
     function clickAddItemBtn() {
         setModal(true)
     }
 
+    // CLICK modify user button
     function clickModifyItemBtn() {
         if(selectedItem === '') {
             dispatch(modalOpen(t('SERVER.MESSAGE.PLEASE_CHOICE_ACCOUNT')))
@@ -68,36 +88,29 @@ export default function ManagerUserWrapper() {
         }
     }
 
+    // ACTION get select account
     async function getSelectAccount() {
         const accountInfo = await AccountAction.getSelectAccount(selectedItem)
-        await console.log(accountInfo)
         setAccountInfo(accountInfo)
         setAccount(accountInfo)
     }
 
+    // CLOSE add modify modal
     function closeModal() {
         setModal(false)
         setAccount('')
         setIsReadOnly(false)
         setIsModify(false)
     }
-    
-    useEffect(() => {
-        getTopGroupList()
-        getAccountList()
-    }, [])
 
-    useEffect(() => {
-        getTopGroupList()
-        getAccountList()
-    }, [pageSize])
-
+    // ACTION get account list
     async function getAccountList() {
         const userList = await AccountAction.getAccountList(startIndex, pageSize, searchOption, searchOptionText, searchOptionStatus)
         await setAccountList(userList)
         await setLoading(false)
     }
 
+    // ACTION get group list
     async function getTopGroupList() {
         const groupList = await GroupAction.getTopGroupList()
         await setGroupList(groupList)
@@ -114,7 +127,12 @@ export default function ManagerUserWrapper() {
         })
     }
 
+    // ACTION add modify user
     async function addModifyUser() {
+        let message = ''
+        message = checkEmptyData()
+        if(message !== '') { dispatch(modalOpen(message)); return; }
+        // modify account
         if(isModify) {
             const params = modifyDataCompare()
             if(Object.keys(params).length === 0) {
@@ -123,20 +141,25 @@ export default function ManagerUserWrapper() {
                 params.accountIdx = account.accountIdx
                 await AccountAction.modifyAccount(params)
             }
+        // add account
         } else {
-            if(account.name === undefined) {dispatch(modalOpen(t('SERVER.MESSAGE.PLEASE_ENTER_GROUP_NAME'))); return;}
-            if(account.accountId === undefined) {dispatch(modalOpen(t('SERVER.MESSAGE.PLEASE_ENTER_ID'))); return;}
-            if(account.password === undefined) {dispatch(modalOpen(t('SERVER.MESSAGE.PLEASE_ENTER_PASSWORD'))); return;}
-            if(account.groupId === undefined) {dispatch(modalOpen(t('SERVER.MESSAGE.PLEASE_CHOICE_GROUP'))); return;}
-
-            //await AccountAction.addAccount(account)
+            await AccountAction.addAccount(account)
         }
+    }
+
+    // CHECK isEmpty
+    function checkEmptyData() {
+        if(account.accountId === undefined || account.accountId === '') {return t('SERVER.MESSAGE.PLEASE_ENTER_ID')}
+        if(account.name === undefined || account.name === '') {return t('SERVER.MESSAGE.PLEASE_ENTER_GROUP_NAME')}
+        if(account.password === undefined || account.password === '') {return t('SERVER.MESSAGE.PLEASE_ENTER_PASSWORD')}
+        if(account.groupId === undefined || account.groupId === '') {return t('SERVER.MESSAGE.PLEASE_CHOICE_GROUP')}
     }
 
     // CHECK modify contents
     function modifyDataCompare() {
         const params = {}
         if(accountInfo.name !== account.name) {params.name = account.name}
+        if(account.password !== '' || account.password !== undefined) {params.password = account.password}
         if(accountInfo.grade !== account.grade) {params.grade = account.grade}
         if(accountInfo.groupId !== account.groupId) {params.groupId = account.groupId}
         if(accountInfo.status !== account.status) {params.status = account.status}
@@ -144,16 +167,17 @@ export default function ManagerUserWrapper() {
         return params
     }
 
-
+    // OPEN select group modal
     function openSelectGroupModal() {
         setSelectGroupModal(true)
     }
 
-    // OPEN modal upper group
+    // CLOSE select group modal
     function closeSelectGroupModal() {
         setSelectGroupModal(false)
     }
 
+    // STATE account change
     function handleChange(e) {
         const {id, value} = e.target
         setAccount({
@@ -162,6 +186,7 @@ export default function ManagerUserWrapper() {
         })
     }
 
+    // STATE account status change
     async function statusChange(e) {
         await setAccount({
             ...account,
@@ -169,18 +194,22 @@ export default function ManagerUserWrapper() {
         })
     }
 
+    // STATE search option change
     function changeOption(e) {
         setSearchOption(e.target.value)
     }
 
+    // STATE search option text change
     function changeText(e) {
         setSearchOptionText(e.target.value)
     }
 
+    // ACTION search
     function search() {
         getAccountList()
     }
 
+    // ACTION search button click enter
     function handleOnKeyPress(e) {
         if (e.key === 'Enter') {
           search() // Enter 입력이 되면 클릭 이벤트 실행
@@ -195,6 +224,8 @@ export default function ManagerUserWrapper() {
             dispatch(modalOpen(t('SERVER.MESSAGE.ARE_YOU_WANT_TO_DELETE'), true, removeAccount))
         }
     }
+
+    // ACTION delete account
     async function removeAccount() {
         let accountIdxs = checkedItem.join(',')
         await AccountAction.removeAccount(accountIdxs)
@@ -215,7 +246,7 @@ export default function ManagerUserWrapper() {
                 <AddModifyUserModal modalClose={closeModal} grades={grades} handleChange={handleChange} statusChange={statusChange} openSelectGroupModal={openSelectGroupModal} addModifyUser={addModifyUser} account={account} isReadOnly={isReadOnly} />
                 : <></>}
                 <div id='layoutMainSearch' className='fl_contHeadBtnBox'>
-                    <SearchTitle title='사용자 관리'>
+                    <SearchTitle title={t('MENU.NAME.ACCOUNT')}>
                         <SearchWrapper>
                             <select id='searchTextOption' className='wid180' onChange={changeOption}>
                                 <option value='name'>{t('COLUMN.NAME.NAME')}</option>

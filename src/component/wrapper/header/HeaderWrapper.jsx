@@ -1,6 +1,6 @@
 // route
+import { useEffect, useState } from "react"
 import React from "react"
-import { Route, Routes } from "react-router-dom"
 
 // lang
 import { useTranslation } from 'react-i18next'
@@ -12,13 +12,35 @@ import userImg from 'images/user_img_bk.png'
 // bootstrap
 import { Dropdown } from 'react-bootstrap'
 
+// ACTION
+import * as AccountAction from 'action/AccountAction'
+
 // font awesome
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faArrowsUpDownLeftRight, faGear, faCaretDown } from '@fortawesome/free-solid-svg-icons'
-import { useState } from "react"
+import { faUser, faGear, faCaretDown } from '@fortawesome/free-solid-svg-icons'
 
 export default function HeaderWrapper() {
+    const url = window.location.href
     const { t } = useTranslation()
+
+    const [account, setAccount] = useState({})
+
+    useEffect(() => {
+        getAccountInfo()
+    }, [])
+
+    async function getAccountInfo() {
+        const accountInfo = await AccountAction.getAccountInfo()
+        await setAccount(accountInfo)
+    }
+
+    function replaceUrl(value) {
+        if(value === 'manager') {
+            window.location.replace('/main/manager/account')
+        } else {
+            window.location.replace('/main/user/account')
+        }
+    }
 
     const CustomToggle = React.forwardRef(({ children, onClick }, ref) => (
         <dt
@@ -49,7 +71,7 @@ export default function HeaderWrapper() {
                 </dd>
             );
         },
-    );
+    )
 
     return (
         <>
@@ -62,14 +84,15 @@ export default function HeaderWrapper() {
             <div className='headerNav'>
                 <ul>
                     <li>
-                        <a href='#' id='__layoutLeftSlideTopMenuBtn' title='화면 크게보기'>
-                            <FontAwesomeIcon icon={faArrowsUpDownLeftRight} />
-                        </a>
-                    </li>
-                    <li>
-                        <a href='#' id='__layoutLeftSlideTopMenuBtn' title='사용자/관리자 메인'>
-                            <FontAwesomeIcon icon={faGear} />
-                        </a>
+                        {url.includes('manager') ?
+                            <a href='#' className='leftMenuItem' onClick={() => replaceUrl('user')}>
+                                <FontAwesomeIcon icon={faUser}/>
+                            </a>
+                            : 
+                            <a href='#' className='leftMenuItem' onClick={() => replaceUrl('manager')}>
+                                <FontAwesomeIcon icon={faGear}/>
+                            </a>
+                        }
                     </li>
                 </ul>
             </div>
@@ -79,7 +102,7 @@ export default function HeaderWrapper() {
                     <Dropdown.Toggle as={CustomToggle}>
                         <a href='#'>
                             <span className='userImg'><img src={userImg} /></span>
-                            <span id='__layoutMainUserInfoUserName'>관리자</span>
+                            <span id='__layoutMainUserInfoUserName'>{account.name}</span>
                             <FontAwesomeIcon icon={faCaretDown} />
                         </a>
                     </Dropdown.Toggle>
@@ -90,30 +113,27 @@ export default function HeaderWrapper() {
                                     <img src={userImg} />
                                 </span>
                                 <a href='#' id='__layoutMainUserInfoUpdateBtn'>
-                                    <b>관리자</b>
+                                    <b>{account.name}({account.accountId})</b>
                                 </a>
                                 <a href='#' id='__layoutMainUserInfoLogoutBtn'>로그아웃</a>
                             </dt>
                             <dd>
                                 <ul>
                                     <li>
-                                        <b>부서</b>
+                                        <b>{t('COLUMN.NAME.GROUP')}</b>
+                                        <span>{account.groupName}</span>
                                     </li>
                                     <li>
-                                        <b>비밀번호</b>
-                                        <a href='#' id='__layoutMainUserInfoChangePasswordBtn' title='비밀번호 변경' className='smallBtn'>비밀번호 변경</a>
+                                        <b>{t('COLUMN.NAME.PASSWORD')}</b>
+                                        <a href='#' id='__layoutMainUserInfoChangePasswordBtn' title='비밀번호 변경' className='smallBtn'>{t('COLUMN.NAME.PASSWORD_CHANGE')}</a>
                                     </li>
                                     <li>
-                                        <b>사원번호</b>
-                                        <span>1111111</span>
+                                        <b>{t('COLUMN.NAME.GRADE')}</b>
+                                        <span>{account.grade}</span>
                                     </li>
                                     <li>
-                                        <b>역할</b>
-                                        <ul>
-                                            <li>
-                                                <span>관리자</span>
-                                            </li>
-                                        </ul>
+                                        <b>{t('COLUMN.NAME.ROLE')}</b>
+                                        <span></span>
                                     </li>
                                 </ul>
                             </dd>

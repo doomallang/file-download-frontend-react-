@@ -212,16 +212,16 @@ export default function ManagerGroupWrapper() {
                     <AddUserModal selectGroup={selectGroup} modalClose={closeAddUserModal} />
                 : <></>}
                 <div id='layoutMainSearch' className='fl_contHeadBtnBox'>
-                    <SearchTitle title='그룹 관리' />
+                    <SearchTitle title={t('MENU.NAME.GROUP')} />
                     <SearchButtonWrapper>
                         <SearchLeftButton>
-                            <li><button id='addItemBtn' type='button' className='addBtn' onClick={clickAddItemBtn}>추가</button></li>
-                            <li><button id='addModifyUserItemBtn' type='button' onClick={openAddUserModal}>사용자 추가/삭제</button></li>
-                            <li><button id='modifyItemBtn' type='button' onClick={clickModifyItemBtn}>수정</button></li>
-                            <li><button id='excelDownload' type='button' className='excelBtn'>EXCEL</button></li>
+                            <li><button id='addItemBtn' type='button' className='addBtn' onClick={clickAddItemBtn}>{t('COLUMN.NAME.ADD')}</button></li>
+                            <li><button id='addModifyUserItemBtn' type='button' onClick={openAddUserModal}>{t('COLUMN.NAME.ADD_DELETE_USER')}</button></li>
+                            <li><button id='modifyItemBtn' type='button' onClick={clickModifyItemBtn}>{t('COLUMN.NAME.MODIFY')}</button></li>
+                            <li><button id='excelDownload' type='button' className='excelBtn'>{t('COLUMN.NAME.EXCEL')}</button></li>
                         </SearchLeftButton>
                         <SearchRightButton>
-                            <li><button id='removeItemBtn' type='button' onClick={clickDeleteButton}>삭제</button></li>
+                            <li><button id='removeItemBtn' type='button' onClick={clickDeleteButton}>{t('COLUMN.NAME.DELETE')}</button></li>
                         </SearchRightButton>
                     </SearchButtonWrapper>
                 </div>
